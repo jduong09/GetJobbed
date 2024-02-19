@@ -8,7 +8,11 @@ function App() {
   useEffect(() => {
     const authenticateUser = async () => {
       try {
-        await fetch('http://localhost:5000/gmail/auth');
+        const response = await fetch('http://localhost:5000/gmail/auth');
+        const { signedIn, oauthUrl } = await response.json();
+        if (!signedIn) {
+          window.location = oauthUrl;
+        } 
       } catch(err) {
         console.log(err);
       }
@@ -16,6 +20,18 @@ function App() {
 
     authenticateUser();
   }, []);
+
+  const handleProfileClick = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:5000/gmail/user/id');
+      const data = await response.json();
+      console.log(data);
+    } catch(err) {
+      console.log(err);
+    }
+  }
 
   return (
     <>
@@ -29,6 +45,7 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <JobBoard />
+      <button type='button' id='btn-profile' onClick={handleProfileClick}>Get User Id</button>
     </>
   )
 }

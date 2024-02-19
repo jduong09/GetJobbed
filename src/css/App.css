@@ -40,3 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+
+#btn-profile {
+  border: 2px solid black;
+  padding: .5rem 1rem;
+  font-size: 1rem;
+}
