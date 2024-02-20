@@ -25,7 +25,7 @@ function App() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/gmail/user/id');
+      const response = await fetch('http://localhost:5000/gmail/user/messages');
       const data = await response.json();
       console.log(data);
     } catch(err) {
@@ -45,7 +45,7 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <JobBoard />
-      <button type='button' id='btn-profile' onClick={handleProfileClick}>Get User Id</button>
+      <button type='button' id='btn-profile' onClick={handleProfileClick}>Get Messages</button>
     </>
   )
 }
