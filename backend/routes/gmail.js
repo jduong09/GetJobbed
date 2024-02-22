@@ -13,6 +13,23 @@ const oauth2Client = new google.auth.OAuth2(
   gmailRedirectUrl
 );
 
+oauth2Client.on('tokens', (tokens) => {
+  if (tokens.refresh_token) {
+    // store the refresh tokens in my database
+    console.log(tokens.refresh_token);
+  }
+  console.log(tokens.access_token);
+});
+
+// Set refresh_token at a later time
+/*
+oauth2Client.setCredentials({
+  refresh_token: `STORED_REFRESH_TOKEN`
+});
+*/
+
+// As a developer, you should write your code to handle the case where a refresh token is no longer working.
+
 const scopes = [
   'https://www.googleapis.com/auth/gmail.addons.current.message.readonly',
   'https://www.googleapis.com/auth/gmail.addons.current.message.action',
@@ -39,7 +56,7 @@ app.get('/auth/redirect', async (req, res) => {
   // receive accessToken
   // console.log('Hit Redirect Route');
   const { tokens } = await oauth2Client.getToken(req.query.code);
-  // console.log(tokens);
+  console.log(tokens);
   oauth2Client.setCredentials(tokens);
   res.redirect('http://localhost:5173');
 });
@@ -58,7 +75,7 @@ app.get('/user/messages', async (req, res) => {
     dataMessage.payload.headers.find(header => header.name === 'From')
     */
 
-    /* This arr will store objects that have a from and a to. */
+    /* This arr will store objects that contain the message From value and messageId value. */
     const arrMessageFromObjs = await Promise.all(objListOfMessageIds.messages.map(async (message) => {
       const fetchMessage = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${message.id}?access_token=${accessToken.token}`);
       const dataMessage = await fetchMessage.json();
