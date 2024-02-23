@@ -79,4 +79,7 @@ const migrate = async () => {
   });
 };
 
-export default migrate;
+export {
+  execute,
+  migrate
+}

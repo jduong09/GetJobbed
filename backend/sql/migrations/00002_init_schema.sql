@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS users (
   id BIGSERIAL NOT NULL PRIMARY KEY,
   email EMAIL NOT NULL,
   user_uuid UUID NOT NULL DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

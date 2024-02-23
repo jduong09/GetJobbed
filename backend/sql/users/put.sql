@@ -1,3 +1,3 @@
-INSERT INTO users (name, email)
-VALUES(${name}, ${email_address})
+INSERT INTO users (email)
+VALUES(${email_address})
 RETURNING *;

@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { google } from 'googleapis';
+import { createUser, getUserByEmail } from '../server/actions/users.js';
 
 dotenv.config();
 const app = express.Router();
@@ -54,10 +55,7 @@ app.get('/authorize', (req, res) => {
 
 // After user has authenticated GetJobbed to access the provided scopes, redirect to this endpoint.
 app.get('/redirect', async (req, res) => {
-  // receive accessToken
-  // console.log('Hit Redirect Route');
   const { tokens } = await oauth2Client.getToken(req.query.code);
-  console.log(tokens);
   oauth2Client.setCredentials(tokens);
 
   const fetchUsersEmail = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/profile`, {
@@ -69,8 +67,8 @@ app.get('/redirect', async (req, res) => {
   });
 
   const data = await fetchUsersEmail.json();
-  const emailAddress = data.emailAddress;
-  // create user in db
+  createUser(data.emailAddress);
+
   res.redirect('http://localhost:5173');
 });
 
