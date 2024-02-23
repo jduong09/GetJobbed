@@ -1,6 +1,6 @@
 /* Helper functions for db */
-const util = require('util');
-const fs = require('fs');
+import * as util from 'util';
+import * as fs from 'fs';
 
 /**
  * @description Read all files in current directory, filter out files
@@ -10,13 +10,13 @@ const fs = require('fs');
  */
 
 const getOutstandingMigrations = async (migrations = []) => {
-  const files = await util.promisify(fs.readdir)('server/sql/migrations');
+  const files = await util.promisify(fs.readdir)('backend/sql/migrations');
   const sql = await Promise.all(
     files
       .filter((file) => file.split('.')[1] === 'sql' && (!migrations.includes(file)))
       .map(async (file) => ({
         file,
-        query: await util.promisify(fs.readFile)(`server/sql/migrations/${file}`, {
+        query: await util.promisify(fs.readFile)(`backend/sql/migrations/${file}`, {
           encoding: 'utf-8',
         }),
       }))
@@ -24,6 +24,4 @@ const getOutstandingMigrations = async (migrations = []) => {
   return sql;
 };
 
-module.exports = {
-  getOutstandingMigrations,
-}
+export default getOutstandingMigrations;

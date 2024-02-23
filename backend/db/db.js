@@ -1,11 +1,12 @@
-import { Pool } from 'pg';
+import pkg from 'pg';
 import dotenv from 'dotenv';
 import fs from 'fs';
-import { getOutstandingMigrations } from './migrations';
+import getOutstandingMigrations from './migrations.js';
 
 dotenv.config();
+const { Pool } = pkg;
 
-const poolConfig = { connectionString: process.env.DATABASE_URL };
+const poolConfig = { connectionString: process.env.DATABASE_CONNECTION_STRING };
 
 const pgPool = new Pool(poolConfig);
 
@@ -59,11 +60,13 @@ const migrate = async () => {
       await client.query('BEGIN');
       // eslint-disable-next-line no-restricted-syntax
       for (const migration of outstandingMigrations) {
-        await execute(`server/sql/migrations/${migration.file}`);
-        await execute('server/sql/migrationQueries/put.sql', { file_name: migration.file });
+        console.log('Executing outstanding migration: ', `backend/sql/migrations/${migration.file}`);
+        await execute(`backend/sql/migrations/${migration.file}`);
+        await execute('backend/sql/migrationQueries/put.sql', { file_name: migration.file });
       }
       await client.query('COMMIT');
     } catch (err) {
+      // Log some kind of error so client knows what happened on executing migrations.
       await client.query('ROLLBACK');
     } finally {
       release((err) => {
@@ -76,9 +79,4 @@ const migrate = async () => {
   });
 };
 
-module.exports = {
-  query,
-  execute,
-  pgPool,
-  migrate
-}
+export default migrate;

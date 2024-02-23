@@ -16,6 +16,7 @@ const oauth2Client = new google.auth.OAuth2(
 oauth2Client.on('tokens', (tokens) => {
   if (tokens.refresh_token) {
     // store the refresh tokens in my database
+
     console.log(tokens.refresh_token);
   }
   console.log(tokens.access_token);
@@ -36,28 +37,40 @@ const scopes = [
   'https://www.googleapis.com/auth/gmail.readonly'
 ]
 
-const url = oauth2Client.generateAuthUrl({
+const authorizationUrl = oauth2Client.generateAuthUrl({
   access_type: 'offline',
   scope: scopes
 });
 
-app.get('/auth', (req, res) => {
+app.get('/authorize', (req, res) => {
   console.log('Hit Auth Route');
   // console.log(oauth2Client);
   if (!Object.keys(oauth2Client.credentials).length) {
-    res.json({ oauthUrl: url });
+    res.json({ oauthUrl: authorizationUrl });
   } else {
     res.json({ signedIn: true });
   }
 });
 
 // After user has authenticated GetJobbed to access the provided scopes, redirect to this endpoint.
-app.get('/auth/redirect', async (req, res) => {
+app.get('/redirect', async (req, res) => {
   // receive accessToken
   // console.log('Hit Redirect Route');
   const { tokens } = await oauth2Client.getToken(req.query.code);
   console.log(tokens);
   oauth2Client.setCredentials(tokens);
+
+  const fetchUsersEmail = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/profile`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${tokens.access_token}`,
+      'Accept': 'application/json'
+    }
+  });
+
+  const data = await fetchUsersEmail.json();
+  const emailAddress = data.emailAddress;
+  // create user in db
   res.redirect('http://localhost:5173');
 });
 
@@ -92,4 +105,4 @@ app.get('/user/messages', async (req, res) => {
   }
 });
 
-export { app as gmailRouter };
+export { app as authRouter };

@@ -1,17 +1,19 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { gmailRouter } from '../routes/gmail.js';
+import { authRouter } from '../routes/auth.js';
+import migrate from '../db/db.js';
 
 dotenv.config();
 const app = express();
+migrate();
 app.use(cors());
 
 const { appKey, appId, PORT } = process.env;
 
 const port = PORT || 5000;
 
-app.use('/gmail', gmailRouter);
+app.use('/auth', authRouter);
 
 app.get("/jobs", async (req, res) => {
   try {

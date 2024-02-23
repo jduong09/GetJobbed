@@ -1,7 +1,3 @@
-CREATE EXTENSION citext;
-CREATE DOMAIN EMAIL AS citext
-  CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
-
 CREATE TABLE IF NOT EXISTS users (
   id BIGSERIAL NOT NULL PRIMARY KEY,
   email EMAIL NOT NULL,
@@ -19,4 +15,15 @@ CREATE TABLE IF NOT EXISTS jobs (
     FOREIGN KEY(user_id)
       REFERENCES users(id)
       ON DELETE CASCADE
-)
+);
+
+CREATE TABLE IF NOT EXISTS tokens (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  refresh_token TEXT NOT NULL,
+  expiry_date BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  CONSTRAINT fk_user
+    FOREIGN KEY(user_id)
+      REFERENCES users(id)
+      ON DELETE CASCADE
+);
