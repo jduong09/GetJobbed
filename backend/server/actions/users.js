@@ -2,15 +2,17 @@ import { execute } from '../../db/db.js';
 
 const createUser = async (email_address) => {
   try {
-    await execute('backend/sql/users/put.sql', { email_address });
+    const { rows: [data] } = await execute('backend/sql/users/put.sql', { email_address });
+    return data;
   } catch (err) {
     console.log(err);
   }
 };
 
-const getUserByEmail = async(email_address) => {
+const getUserByEmail = async (email_address) => {
   try {
-    await execute('backend/sql/users/getByEmail.sql', { email_address });
+    const { rows: [data] } = await execute('backend/sql/users/getUserByEmail.sql', { email_address });
+    return data;
   } catch(err) {
     console.log(err);
   }

@@ -8,6 +8,8 @@ dotenv.config();
 const app = express();
 migrate();
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const { appKey, appId, PORT } = process.env;
 

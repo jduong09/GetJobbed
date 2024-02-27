@@ -1,20 +1,34 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
+import jwt from 'jsonwebtoken';
 import { createUser, getUserByEmail } from '../server/actions/users.js';
+import { createToken, getTokenByUserId } from '../server/actions/tokens.js';
 
 dotenv.config();
 const app = express.Router();
 
 const { gmailClientId, gmailClientSecret, gmailRedirectUrl } = process.env;
 
-const oauth2Client = new google.auth.OAuth2(
+
+const oAuth2Client = new OAuth2Client(
   gmailClientId,
   gmailClientSecret,
   gmailRedirectUrl
 );
 
-oauth2Client.on('tokens', (tokens) => {
+const scopes = [
+  'https://www.googleapis.com/auth/gmail.addons.current.message.readonly',
+  'https://www.googleapis.com/auth/gmail.addons.current.message.action',
+  'https://www.googleapis.com/auth/gmail.readonly'
+]
+
+const authorizationUrl = oAuth2Client.generateAuthUrl({
+  access_type: 'offline',
+  scope: scopes
+});
+
+oAuth2Client.on('tokens', (tokens) => {
   if (tokens.refresh_token) {
     // store the refresh tokens in my database
 
@@ -23,30 +37,10 @@ oauth2Client.on('tokens', (tokens) => {
   console.log(tokens.access_token);
 });
 
-// Set refresh_token at a later time
-/*
-oauth2Client.setCredentials({
-  refresh_token: `STORED_REFRESH_TOKEN`
-});
-*/
-
 // As a developer, you should write your code to handle the case where a refresh token is no longer working.
-
-const scopes = [
-  'https://www.googleapis.com/auth/gmail.addons.current.message.readonly',
-  'https://www.googleapis.com/auth/gmail.addons.current.message.action',
-  'https://www.googleapis.com/auth/gmail.readonly'
-]
-
-const authorizationUrl = oauth2Client.generateAuthUrl({
-  access_type: 'offline',
-  scope: scopes
-});
-
 app.get('/authorize', (req, res) => {
-  console.log('Hit Auth Route');
   // console.log(oauth2Client);
-  if (!Object.keys(oauth2Client.credentials).length) {
+  if (!Object.keys(oAuth2Client.credentials).length) {
     res.json({ oauthUrl: authorizationUrl });
   } else {
     res.json({ signedIn: true });
@@ -55,8 +49,9 @@ app.get('/authorize', (req, res) => {
 
 // After user has authenticated GetJobbed to access the provided scopes, redirect to this endpoint.
 app.get('/redirect', async (req, res) => {
-  const { tokens } = await oauth2Client.getToken(req.query.code);
-  oauth2Client.setCredentials(tokens);
+  const { tokens } = await oAuth2Client.getToken(req.query.code);
+  console.log(tokens);
+  oAuth2Client.setCredentials(tokens);
 
   const fetchUsersEmail = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/profile`, {
     method: 'GET',
@@ -67,13 +62,14 @@ app.get('/redirect', async (req, res) => {
   });
 
   const data = await fetchUsersEmail.json();
-  createUser(data.emailAddress);
+  const userIdObj = await createUser(data.emailAddress);
+  await createToken(tokens.refresh_token, tokens.expiry_date, userIdObj.id);
 
   res.redirect('http://localhost:5173');
 });
 
 app.get('/user/messages', async (req, res) => {
-  const accessToken = await oauth2Client.getAccessToken();
+  const accessToken = await oAuth2Client.getAccessToken();
   try {  
     const fetchMessageIds = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?access_token=${accessToken.token}`);
     const objListOfMessageIds = await fetchMessageIds.json();
@@ -103,8 +99,45 @@ app.get('/user/messages', async (req, res) => {
   }
 });
 
-app.get('/login', async (req, res) => {
+app.post('/login', async (req, res) => {
+  const { credential } = req.body;
+  const { email } = await jwt.decode(credential);
+  
+  const user = await getUserByEmail(email);
 
+  if (user) {
+    const { refresh_token } = await getTokenByUserId(user.id);
+    const accessTokenResponse = await getAccessTokenFromRefreshToken(refresh_token);
+    /*
+    {
+      access_token: '',
+      expiry_date: number in minutes,
+      type: 'Bearer
+    }
+    */
+   console.log(accessTokenResponse)
+  } else {
+    // throw error, redirect to authorize/signup.
+    console.log('no user in server db');
+  }
 });
+
+const getAccessTokenFromRefreshToken = async (refresh_token) => {
+  const response = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json'
+    },
+    body: new URLSearchParams({
+      'grant_type': 'refresh_token',
+      'client_id': gmailClientId,
+      'client_secret': gmailClientSecret,
+      'refresh_token': refresh_token
+    })
+  });
+  const data = await response.json();
+  return data;
+}
 
 export { app as authRouter };
