@@ -1,7 +1,7 @@
-import reactLogo from './assets/react.svg'
+import reactLogo from '../assets/react.svg'
 import viteLogo from '/vite.svg';
-import './css/App.css';
-import { JobBoard } from './jobBoard/jobBoard';
+import '../css/App.css';
+import { JobBoard } from '../jobBoard/jobBoard';
 import LandingPage from './landingPage';
 import { useEffect } from 'react';
 
@@ -13,7 +13,7 @@ function App() {
         const { signedIn, oauthUrl } = await response.json();
         if (!signedIn) {
           window.location = oauthUrl;
-        } 
+        }
       } catch(err) {
         console.log(err);
       }

@@ -103,4 +103,8 @@ app.get('/user/messages', async (req, res) => {
   }
 });
 
+app.get('/login', async (req, res) => {
+
+});
+
 export { app as authRouter };

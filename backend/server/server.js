@@ -41,7 +41,7 @@ app.get("/jobs", async (req, res) => {
   } catch(err) {
     console.log(err);
   }
-})
+});
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`App is listening on Port ${port}`);
