@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { authRouter } from '../routes/auth.js';
+import { userRouter } from '../routes/user.js';
 import { migrate } from '../db/db.js';
 
 dotenv.config();
@@ -16,6 +17,7 @@ const { appKey, appId, PORT } = process.env;
 const port = PORT || 5000;
 
 app.use('/auth', authRouter);
+app.use('/users', userRouter);
 
 app.get("/jobs", async (req, res) => {
   try {

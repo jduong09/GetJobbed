@@ -112,10 +112,12 @@ app.post('/login', async (req, res) => {
     {
       access_token: '',
       expiry_date: number in minutes,
-      type: 'Bearer
+      scope: '',
+      token_type: 'Bearer'
     }
     */
-   console.log(accessTokenResponse)
+   oAuth2Client.setCredentials(accessTokenResponse);
+   res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
   } else {
     // throw error, redirect to authorize/signup.
     console.log('no user in server db');
@@ -140,4 +142,7 @@ const getAccessTokenFromRefreshToken = async (refresh_token) => {
   return data;
 }
 
-export { app as authRouter };
+export { 
+  app as authRouter,
+  oAuth2Client as authClient
+};
