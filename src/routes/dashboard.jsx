@@ -1,9 +1,12 @@
 import { useEffect } from 'react';
+import { JobBoard } from '../jobBoard/jobBoard';
 
 const Dashboard = () => {
   useEffect(() => {
     const fetchFilteredEmails = async () => {
       const response = await fetch(`http://localhost:5000${window.location.pathname}/messages`);
+      const data = response.json();
+      console.log(data);
     }
     fetchFilteredEmails();
   }, []);
@@ -18,9 +21,7 @@ const Dashboard = () => {
         </nav>
       </header>
       <main>
-        <div>
-          <h2>Job Board</h2>
-        </div>
+        <JobBoard />
         <div>
           <h2>Responses</h2>
         </div>

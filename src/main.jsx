@@ -4,7 +4,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './routes/App.jsx';
 import Login from './routes/loginPage.jsx';
 import Dashboard from './routes/dashboard.jsx';
-import './css/index.css'
+import './css/meyers_reset.css';
+import './css/index.css';
 
 const router = createBrowserRouter([
   {
