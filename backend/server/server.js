@@ -1,17 +1,23 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { gmailRouter } from '../routes/gmail.js';
+import { authRouter } from '../routes/auth.js';
+import { userRouter } from '../routes/user.js';
+import { migrate } from '../db/db.js';
 
 dotenv.config();
 const app = express();
+migrate();
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const { appKey, appId, PORT } = process.env;
 
 const port = PORT || 5000;
 
-app.use('/gmail', gmailRouter);
+app.use('/auth', authRouter);
+app.use('/users', userRouter);
 
 app.get("/jobs", async (req, res) => {
   try {
@@ -39,7 +45,7 @@ app.get("/jobs", async (req, res) => {
   } catch(err) {
     console.log(err);
   }
-})
+});
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`App is listening on Port ${port}`);
