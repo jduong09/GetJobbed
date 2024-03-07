@@ -1,7 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
-import jwt from 'jsonwebtoken';
 import { createUser, getUserByEmail } from '../server/actions/users.js';
 import { createToken, getTokenByUserId } from '../server/actions/tokens.js';
 
@@ -9,7 +8,6 @@ dotenv.config();
 const app = express.Router();
 
 const { gmailClientId, gmailClientSecret, gmailRedirectUrl } = process.env;
-
 
 const oAuth2Client = new OAuth2Client(
   gmailClientId,
@@ -47,7 +45,7 @@ app.get('/authorize', (req, res) => {
   }
 });
 
-// After user has authenticated GetJobbed to access the provided scopes, redirect to this endpoint.
+// After user has authorized GetJobbed to access the provided scopes, redirect to this endpoint.
 app.get('/redirect', async (req, res) => {
   const { tokens } = await oAuth2Client.getToken(req.query.code);
   console.log(tokens);
@@ -70,26 +68,25 @@ app.get('/redirect', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const { credential } = req.body;
-  const { email } = await jwt.decode(credential);
-  
-  const user = await getUserByEmail(email);
 
-  if (user) {
-    const { refresh_token } = await getTokenByUserId(user.id);
-    const accessTokenResponse = await getAccessTokenFromRefreshToken(refresh_token);
-    /*
-    {
-      access_token: '',
-      expiry_date: number in minutes,
-      scope: '',
-      token_type: 'Bearer'
+  const email = await verify(credential);
+
+  // Verify the signature of the JWT.
+  if (email) {
+    const user = await getUserByEmail(email);
+    if (user) {
+      const { refresh_token } = await getTokenByUserId(user.id);
+      const accessTokenResponse = await getAccessTokenFromRefreshToken(refresh_token);
+      oAuth2Client.setCredentials(accessTokenResponse);
+
+      // Add Token to Cookie.
+     res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
+    } else {
+      // throw error, redirect to authorize/signup.
+      console.log('no user in server db');
     }
-    */
-   oAuth2Client.setCredentials(accessTokenResponse);
-   res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
   } else {
-    // throw error, redirect to authorize/signup.
-    console.log('no user in server db');
+    console.log('Id Token is not valid');
   }
 });
 
@@ -109,6 +106,15 @@ const getAccessTokenFromRefreshToken = async (refresh_token) => {
   });
   const data = await response.json();
   return data;
+}
+
+const verify = async (token) => {
+  const ticket = await oAuth2Client.verifyIdToken({
+    idToken: token,
+    audience: gmailClientId
+  });
+  const payload = ticket.getPayload();
+  return payload.email;
 }
 
 export { 

@@ -28,7 +28,7 @@ app.get('/:user_uuid/messages', async (req, res) => {
       return { ...resultObj, messageId: message.id };
     }));
 
-    console.log(arrMessageFromObjs);
+    // console.log(arrMessageFromObjs);
     res.json({ data: 'nice' });
   } catch(err) {
     console.log(err);
