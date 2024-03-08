@@ -7,12 +7,12 @@ import { createToken, getTokenByUserId } from '../server/actions/tokens.js';
 dotenv.config();
 const app = express.Router();
 
-const { gmailClientId, gmailClientSecret, gmailRedirectUrl } = process.env;
+const { gmail_client_id, gmail_client_secret, gmail_redirect_url } = process.env;
 
 const oAuth2Client = new OAuth2Client(
-  gmailClientId,
-  gmailClientSecret,
-  gmailRedirectUrl
+  gmail_client_id,
+  gmail_client_secret,
+  gmail_redirect_url
 );
 
 const scopes = [
@@ -109,8 +109,8 @@ const getAccessTokenFromRefreshToken = async (refresh_token) => {
     },
     body: new URLSearchParams({
       'grant_type': 'refresh_token',
-      'client_id': gmailClientId,
-      'client_secret': gmailClientSecret,
+      'client_id': gmail_client_id,
+      'client_secret': gmail_client_secret,
       'refresh_token': refresh_token
     })
   });
@@ -121,7 +121,7 @@ const getAccessTokenFromRefreshToken = async (refresh_token) => {
 const verify = async (token) => {
   const ticket = await oAuth2Client.verifyIdToken({
     idToken: token,
-    audience: gmailClientId
+    audience: gmail_client_id
   });
   const payload = ticket.getPayload();
   return payload.email;

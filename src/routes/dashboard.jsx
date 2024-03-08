@@ -16,8 +16,9 @@ const Dashboard = () => {
       await fetch(`http://localhost:5000/auth/logout`, {
         method: 'POST'
       });
+      // send user to homepage on logout. (Unprotected page).
       window.location = 'http://localhost:5173';
-    } catch(err) {
+    } catch(err) { 
       console.log(err);
     }
   }
