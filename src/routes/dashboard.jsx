@@ -11,13 +11,24 @@ const Dashboard = () => {
     fetchFilteredEmails();
   }, []);
 
+  const handleLogOut = async () => {
+    try {
+      await fetch(`http://localhost:5000/auth/logout`, {
+        method: 'POST'
+      });
+      window.location = 'http://localhost:5173';
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div>
       <header>
         <h1>Insert Logo Here.</h1>
         <h2>Dashboard</h2>
         <nav>
-          <button>Sign Out.</button>
+          <button onClick={handleLogOut}>Sign Out.</button>
         </nav>
       </header>
       <main>

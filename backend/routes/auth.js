@@ -80,6 +80,10 @@ app.post('/login', async (req, res) => {
       oAuth2Client.setCredentials(accessTokenResponse);
 
       // Add Token to Cookie.
+      req.session.token = {
+        access_token: accessTokenResponse
+      }
+
      res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
     } else {
       // throw error, redirect to authorize/signup.
@@ -89,6 +93,12 @@ app.post('/login', async (req, res) => {
     console.log('Id Token is not valid');
   }
 });
+
+app.post('/logout', async (req, res) => {
+  await req.session.destroy();
+  await res.clearCookie('connect.sid');
+  res.redirect('http://localhost:5173');
+})
 
 const getAccessTokenFromRefreshToken = async (refresh_token) => {
   const response = await fetch('https://oauth2.googleapis.com/token', {

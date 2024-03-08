@@ -80,6 +80,7 @@ const migrate = async () => {
 };
 
 export {
+  pgPool,
   execute,
   migrate
 }
