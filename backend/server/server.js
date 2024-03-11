@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import bodyParser from 'body-parser';
 import session from 'express-session';
 import ConnectPg from 'connect-pg-simple';
 import { authRouter } from '../routes/auth.js';
@@ -16,6 +17,7 @@ migrate();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 const { PORT, session_secret, node_env } = process.env;
 

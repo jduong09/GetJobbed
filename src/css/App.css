@@ -18,3 +18,51 @@
   padding: .5rem 1rem;
   font-size: 1rem;
 }
+
+#div-job-board {
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+#div-job-board-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+#div-job-board-header > h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+#list-job-keywords {
+  display: flex;
+  align-items: center;
+}
+
+#list-job-keywords > li {
+  margin-right: 1rem;
+}
+
+#list-job-keywords > li:last-of-type {
+  margin-right: 0;
+}
+
+#list-job-keywords > li > button.active {
+  background-color: #646cff;
+}
+
+#form-job-filter {
+  display: flex;
+  align-items: center;
+}
+
+#form-job-filter > label {
+  margin-right: .5rem;
+}
+
+.list-item-job {
+  padding: 2rem 1rem;
+  border: 1px solid black;
+}

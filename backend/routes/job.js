@@ -35,10 +35,15 @@ app.get("/", async (req, res) => {
 });
 
 // Query by location (zipcode, city and state)
-app.post('/location', async (req, res) => {
-  console.log(`Request body contains filter: ${req.body}`);
+app.post('/filter', async (req, res) => {
+  const { filter, jobTitle } = req.body;
+
+  const jobTitleParam = jobTitle.split(" ").join("%20");
+  const fetchUrl = filter.length 
+    ? `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${app_id}&app_key=${app_key}&results_per_page=10&what=${jobTitleParam}&where=${filter}&distance=100`
+    : `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${app_id}&app_key=${app_key}&results_per_page=10&what=${jobTitleParam}`;
   try {
-    const response = await fetch(`https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${app_id}&app_key=${app_key}&results_per_page=10&what=javascript%20developer&where=${req.body.filter}`, {
+    const response = await fetch(fetchUrl, {
       method: 'GET',
       headers: {
         'Accept': 'application/json'
@@ -63,7 +68,6 @@ app.post('/location', async (req, res) => {
     console.log(err);
   }
 });
-
 
 export {
   app as jobRouter
