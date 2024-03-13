@@ -65,6 +65,7 @@ export const JobBoard = () => {
         body: JSON.stringify(bodyData)
       });
       const data = await response.json();
+      console.log(data);
       setJobs(data.jobs);
     } catch(err) {
       console.log(err);
@@ -75,7 +76,7 @@ export const JobBoard = () => {
     return (<li className='list-item-job' key={idx}>
       <div className='job-header'>
         <h2>{job.companyName}</h2>
-        <span>{job.created}</span>
+        <span>{new Date(job.created).toLocaleDateString()}</span>
         <ul>
           <li>{job.locationName}</li>
           <li>{job.category}</li>

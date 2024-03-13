@@ -24,7 +24,7 @@ app.get("/", async (req, res) => {
         contractType: job.contract_type,
         created: job.created,
         description: job.description,
-        locationName: job.location.display_name,
+        locationName: job.location.area[2] ? `${job.location.area[2]}, ${job.location.area[1]}` : `${job.location.area[1]}`,
         redirectUrl: job.redirect_url
       }
     });
@@ -59,7 +59,7 @@ app.post('/filter', async (req, res) => {
         contractType: job.contract_type,
         created: job.created,
         description: job.description,
-        locationName: job.location.display_name,
+        locationName: job.location.area[2] ? `${job.location.area[2]}, ${job.location.area[1]}` : `${job.location.area[1]}`,
         redirectUrl: job.redirect_url
       }
     });
