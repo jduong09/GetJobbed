@@ -9,6 +9,7 @@ const app = express.Router();
 
 const { gmail_client_id, gmail_client_secret, gmail_redirect_url } = process.env;
 
+
 const oAuth2Client = new OAuth2Client(
   gmail_client_id,
   gmail_client_secret,
@@ -29,7 +30,6 @@ const authorizationUrl = oAuth2Client.generateAuthUrl({
 oAuth2Client.on('tokens', (tokens) => {
   if (tokens.refresh_token) {
     // store the refresh tokens in my database
-
     console.log(tokens.refresh_token);
   }
   console.log(tokens.access_token);
@@ -48,7 +48,6 @@ app.get('/authorize', (req, res) => {
 // After user has authorized GetJobbed to access the provided scopes, redirect to this endpoint.
 app.get('/redirect', async (req, res) => {
   const { tokens } = await oAuth2Client.getToken(req.query.code);
-  console.log(tokens);
   oAuth2Client.setCredentials(tokens);
 
   const fetchUsersEmail = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/profile`, {
@@ -80,11 +79,14 @@ app.post('/login', async (req, res) => {
       oAuth2Client.setCredentials(accessTokenResponse);
 
       // Add Token to Cookie.
-      req.session.token = {
-        access_token: accessTokenResponse
-      }
-
-     res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
+      req.session.userInfo = {
+        access_token: accessTokenResponse,
+        user_id: user.id
+      };
+      console.log('Req Session in /login: ', req.session);
+      req.session.save(() => {
+        res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
+      });
     } else {
       // throw error, redirect to authorize/signup.
       console.log('no user in server db');

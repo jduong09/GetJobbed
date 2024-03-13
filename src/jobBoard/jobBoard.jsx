@@ -8,7 +8,7 @@ export const JobBoard = () => {
   useEffect(() => {
     const getJobs = async () => {
       try {
-        const response = await fetch('http://localhost:5000/jobs', {
+        const response = await fetch('http://localhost:5000/jobboard', {
           method: 'GET',
           headers: {
             'Access-Control-Allow-Origin': '*'
@@ -57,7 +57,7 @@ export const JobBoard = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/jobs/filter', {
+      const response = await fetch('http://localhost:5000/jobboard/filter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -113,7 +113,7 @@ export const JobBoard = () => {
               <button type="button" className={jobTitle === 'Fullstack Developer' ? 'active' : ''} onClick={(e) => handleJobTitleChange('Fullstack Developer', e)}>Fullstack Developer</button>
             </li>
             <li>
-              <button type="button" className={jobTitle === 'Entry Developer' ? 'active' : ''} onClick={(e) => handleJobTitleChange('Entry Developer', e)}>Entry Developer</button>
+              <button type="button" className={jobTitle === 'Quality Assurance' ? 'active' : ''} onClick={(e) => handleJobTitleChange('Quality Assurance', e)}>Quality Assurance</button>
             </li>
           </ul>
         </div>

@@ -20,8 +20,9 @@ const router = createBrowserRouter([
   {
     path: "/users/:user_uuid",
     element: <Dashboard />
-  }
-])
+  }, 
+]);
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <RouterProvider router={router} />

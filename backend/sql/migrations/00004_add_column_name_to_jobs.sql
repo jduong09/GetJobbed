@@ -1,0 +1,2 @@
+ALTER TABLE jobs
+  ADD name TEXT NOT NULL;
