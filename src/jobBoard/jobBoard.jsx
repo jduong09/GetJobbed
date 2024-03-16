@@ -8,7 +8,7 @@ export const JobBoard = () => {
   useEffect(() => {
     const getJobs = async () => {
       try {
-        const response = await fetch('http://localhost:5000/jobboard', {
+        const response = await fetch('/jobboard', {
           method: 'GET',
           headers: {
             'Access-Control-Allow-Origin': '*'
@@ -91,7 +91,7 @@ export const JobBoard = () => {
         <div id="div-job-board-header">
           <h2>Job Board</h2>
           <form id="form-job-filter">
-            <label htmlFor='job-filter'>
+            <label htmlFor='input-job-filter'>
               Location:
               <input type="text" id="input-job-filter" name="job-filter" placeholder="zipcode, city & state..." onChange={handleChange} value={filter}/>
             </label>

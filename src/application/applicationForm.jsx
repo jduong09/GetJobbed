@@ -31,7 +31,7 @@ export const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
         user_uuid: user_uuid
       };
       try {
-        const response = await fetch(`http://localhost:5000/jobs/new`, {
+        const response = await fetch(`/api/jobs/new`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -56,21 +56,21 @@ export const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
         </button>
       </div>
       <form id="form-application-create">
-        <label htmlFor='company-name'>
+        <label htmlFor='input-company-name'>
           Company Name
           <input type='text' id='input-company-name' name='company-name' onChange={(e) => handleChange('name', e)} value={companyName} />
         </label>
-        <label htmlFor='job-position'>
+        <label htmlFor='input-job-position'>
           Job Title
           <input type='text' id='input-job-position' name='job-position' onChange={(e) => handleChange('position', e)} value={position} />
         </label>
-        <label htmlFor='email'>
+        <label htmlFor='input-email'>
           Email
           <input type='email' id='input-email' name='email' onChange={(e) => handleChange('email', e)} value={email} />
         </label>
         <label htmlFor='status-select'>
           Application Status:
-          <select value={status} name='status-select' onChange={(e) => handleChange('status', e)}>
+          <select value={status} id="status-select" name='status-select' onChange={(e) => handleChange('status', e)}>
             <option value={0}>Applied</option>
             <option value={1}>Received Offer</option>
             <option value={2}>Rejected</option>

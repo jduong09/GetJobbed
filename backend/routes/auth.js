@@ -7,8 +7,15 @@ import { createToken, getTokenByUserId } from '../server/actions/tokens.js';
 dotenv.config();
 const app = express.Router();
 
-const { gmail_client_id, gmail_client_secret, gmail_redirect_url } = process.env;
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:5173', 'http://localhost:5000');
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
+const { gmail_client_id, gmail_client_secret, gmail_redirect_url } = process.env;
 
 const oAuth2Client = new OAuth2Client(
   gmail_client_id,
@@ -65,7 +72,7 @@ app.get('/redirect', async (req, res) => {
   res.redirect('http://localhost:5173');
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res, next) => {
   const { credential } = req.body;
 
   const email = await verify(credential);
@@ -78,15 +85,19 @@ app.post('/login', async (req, res) => {
       const accessTokenResponse = await getAccessTokenFromRefreshToken(refresh_token);
       oAuth2Client.setCredentials(accessTokenResponse);
 
-      // Add Token to Cookie.
+  
       req.session.userInfo = {
         access_token: accessTokenResponse,
         user_id: user.id
       };
-      console.log('Req Session in /login: ', req.session);
-      req.session.save(() => {
-        res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
+
+      await req.session.save((err) => {
+        if (err) return next(err);
       });
+      console.log('Req Session in /login: ', req.session);
+      console.log(req.session.id);
+      res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
+      // Add Token to Cookie.
     } else {
       // throw error, redirect to authorize/signup.
       console.log('no user in server db');

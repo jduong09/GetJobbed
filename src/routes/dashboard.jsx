@@ -9,7 +9,9 @@ const Dashboard = () => {
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     const fetchFilteredEmails = async () => {
-      const response = await fetch(`http://localhost:5000/users/${user_uuid}/messages`);
+      const response = await fetch(`/api/users/${user_uuid}/messages`, {
+        method: 'GET'
+      });
       const data = response.json();
       console.log(data);
     }

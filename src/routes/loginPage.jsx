@@ -7,7 +7,7 @@ const Login = () => {
     if (window.google) {
       google.accounts.id.initialize({
         client_id: gmailClientId,
-        login_uri: "http://localhost:5000/auth/login",
+        login_uri: "http://localhost:5000/api/auth/login",
         ux_mode: "redirect"
       });
 
@@ -20,7 +20,6 @@ const Login = () => {
       // google.accounts.id.prompt();
     }
   }, []);
-
   return (
     <div>
       <h2>Login Page</h2>
