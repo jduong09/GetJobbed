@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { authClient } from './auth.js';
+import { getAllJobsByUserId } from '../server/actions/jobs.js';
 
 dotenv.config();
 const app = express.Router();
@@ -28,6 +29,17 @@ app.get('/:user_uuid/messages', async (req, res) => {
     res.json({ data: 'No' });
   }
   */
+});
+
+app.get('/:user_uuid/jobs', async (req, res) => {
+  const { user_id }  = req.session.userInfo;
+  try {
+    const response = await getAllJobsByUserId({ user_id });
+    res.json({ jobsArray: response });
+  } catch(err) {
+    console.log(err);
+  }
+  res.end();
 });
 
 export {

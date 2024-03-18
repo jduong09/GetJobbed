@@ -46,6 +46,7 @@ const Dashboard = () => {
         <h1>Insert Logo Here.</h1>
         <h2>Dashboard</h2>
         <nav>
+          <a type="button" href={`http://localhost:5173/users/${user_uuid}/applications`}>Your Applications</a>
           <button type="button" onClick={handleOpenModal}>Add Application</button>
           <button type="button" onClick={handleLogOut}>Sign Out.</button>
         </nav>
