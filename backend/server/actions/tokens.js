@@ -10,7 +10,7 @@ const createToken = async (refresh_token, expiry_date, user_id) => {
 
 const getTokenByUserId = async (user_id) => {
   try {
-    const { rows: [data] } = await execute('backend/sql/tokens/getTokenByUserId.sql', { user_id});
+    const { rows: [data] } = await execute('backend/sql/tokens/getTokenByUserId.sql', { user_id });
     return data;
   } catch (err) {
     console.log(err);

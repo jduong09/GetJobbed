@@ -1,20 +1,18 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
-import jwt from 'jsonwebtoken';
 import { createUser, getUserByEmail } from '../server/actions/users.js';
 import { createToken, getTokenByUserId } from '../server/actions/tokens.js';
 
 dotenv.config();
 const app = express.Router();
 
-const { gmailClientId, gmailClientSecret, gmailRedirectUrl } = process.env;
-
+const { gmail_client_id, gmail_client_secret, gmail_redirect_url } = process.env;
 
 const oAuth2Client = new OAuth2Client(
-  gmailClientId,
-  gmailClientSecret,
-  gmailRedirectUrl
+  gmail_client_id,
+  gmail_client_secret,
+  gmail_redirect_url
 );
 
 const scopes = [
@@ -31,7 +29,6 @@ const authorizationUrl = oAuth2Client.generateAuthUrl({
 oAuth2Client.on('tokens', (tokens) => {
   if (tokens.refresh_token) {
     // store the refresh tokens in my database
-
     console.log(tokens.refresh_token);
   }
   console.log(tokens.access_token);
@@ -47,10 +44,9 @@ app.get('/authorize', (req, res) => {
   }
 });
 
-// After user has authenticated GetJobbed to access the provided scopes, redirect to this endpoint.
+// After user has authorized GetJobbed to access the provided scopes, redirect to this endpoint.
 app.get('/redirect', async (req, res) => {
   const { tokens } = await oAuth2Client.getToken(req.query.code);
-  console.log(tokens);
   oAuth2Client.setCredentials(tokens);
 
   const fetchUsersEmail = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/profile`, {
@@ -68,30 +64,44 @@ app.get('/redirect', async (req, res) => {
   res.redirect('http://localhost:5173');
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res, next) => {
   const { credential } = req.body;
-  const { email } = await jwt.decode(credential);
-  
-  const user = await getUserByEmail(email);
 
-  if (user) {
-    const { refresh_token } = await getTokenByUserId(user.id);
-    const accessTokenResponse = await getAccessTokenFromRefreshToken(refresh_token);
-    /*
-    {
-      access_token: '',
-      expiry_date: number in minutes,
-      scope: '',
-      token_type: 'Bearer'
+  const email = await verify(credential);
+
+  // Verify the signature of the JWT.
+  if (email) {
+    const user = await getUserByEmail(email);
+    if (user) {
+      const { refresh_token } = await getTokenByUserId(user.id);
+      const accessTokenResponse = await getAccessTokenFromRefreshToken(refresh_token);
+      oAuth2Client.setCredentials(accessTokenResponse);
+
+  
+      req.session.userInfo = {
+        access_token: accessTokenResponse,
+        user_id: user.id
+      };
+
+      await req.session.save((err) => {
+        if (err) return next(err);
+      });
+      res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
+      // Add Token to Cookie.
+    } else {
+      // throw error, redirect to authorize/signup.
+      console.log('no user in server db');
     }
-    */
-   oAuth2Client.setCredentials(accessTokenResponse);
-   res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
   } else {
-    // throw error, redirect to authorize/signup.
-    console.log('no user in server db');
+    console.log('Id Token is not valid');
   }
 });
+
+app.post('/logout', async (req, res) => {
+  await req.session.destroy();
+  await res.clearCookie('connect.sid');
+  res.redirect('http://localhost:5173');
+})
 
 const getAccessTokenFromRefreshToken = async (refresh_token) => {
   const response = await fetch('https://oauth2.googleapis.com/token', {
@@ -102,13 +112,22 @@ const getAccessTokenFromRefreshToken = async (refresh_token) => {
     },
     body: new URLSearchParams({
       'grant_type': 'refresh_token',
-      'client_id': gmailClientId,
-      'client_secret': gmailClientSecret,
+      'client_id': gmail_client_id,
+      'client_secret': gmail_client_secret,
       'refresh_token': refresh_token
     })
   });
   const data = await response.json();
   return data;
+}
+
+const verify = async (token) => {
+  const ticket = await oAuth2Client.verifyIdToken({
+    idToken: token,
+    audience: gmail_client_id
+  });
+  const payload = ticket.getPayload();
+  return payload.email;
 }
 
 export { 

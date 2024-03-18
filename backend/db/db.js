@@ -28,7 +28,6 @@ const execute = async(path, params = {}) => {
     queryVariables.push(variable);
     return `$${queryVariables.length}`;
   }
-
   let sql = fs.readFileSync(path).toString();
   sql = sql.replace(/\$\{[^{}]+\}/g, queryParam);
   const values = queryVariables ? queryVariables.map(p => params[p]) : [];
@@ -80,6 +79,7 @@ const migrate = async () => {
 };
 
 export {
+  pgPool,
   execute,
   migrate
 }
