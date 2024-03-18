@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { JobBoard } from '../jobBoard/jobBoard';
-import { ApplicationForm } from '../application/applicationForm';
+import ApplicationForm from '../application/applicationForm';
+import ApplicationList from '../application/applicationList';
 import { useParams } from 'react-router-dom';
 
 
 const Dashboard = () => {
   const { user_uuid } = useParams();
   const [isOpen, setIsOpen] = useState(false);
+  const [showApplications, setShowApplications] = useState(false);
+  /*
   useEffect(() => {
+
     const fetchFilteredEmails = async () => {
       const response = await fetch(`/api/users/${user_uuid}/messages`, {
         method: 'GET'
@@ -17,6 +21,7 @@ const Dashboard = () => {
     }
     // fetchFilteredEmails();
   }, []);
+  */
 
   const handleLogOut = async () => {
     try {
@@ -46,15 +51,17 @@ const Dashboard = () => {
         <h1>Insert Logo Here.</h1>
         <h2>Dashboard</h2>
         <nav>
-          <a type="button" href={`http://localhost:5173/users/${user_uuid}/applications`}>Your Applications</a>
           <button type="button" onClick={handleOpenModal}>Add Application</button>
           <button type="button" onClick={handleLogOut}>Sign Out.</button>
         </nav>
       </header>
       <main>
-        <JobBoard />
-        <div>
-          <h2>Responses</h2>
+        <div id="div-dashboard">
+          <div>
+            <button type="button" onClick={() => setShowApplications(false)}>Jobs</button>
+            <button type="button" onClick={() => setShowApplications(true)}>Applications</button>
+          </div>
+          {!showApplications ? <JobBoard /> : <ApplicationList user_uuid={user_uuid} />}
         </div>
         <ApplicationForm isOpen={isOpen} handleCloseClick={handleCloseClick} user_uuid={user_uuid} />
       </main>

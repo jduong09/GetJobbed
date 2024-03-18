@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-export const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
+const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
   const [companyName, setCompanyName] = useState("");
   const [position, setPosition] = useState("");
   const [email, setEmail] = useState("");
@@ -88,6 +88,8 @@ export const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
     </div>
   )
 };
+
+export default ApplicationForm;
 
 ApplicationForm.propTypes = {
   isOpen: PropTypes.bool,
