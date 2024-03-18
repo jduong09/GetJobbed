@@ -15,12 +15,12 @@ const Dashboard = () => {
       const data = response.json();
       console.log(data);
     }
-    fetchFilteredEmails();
+    // fetchFilteredEmails();
   }, []);
 
   const handleLogOut = async () => {
     try {
-      await fetch(`http://localhost:5000/auth/logout`, {
+      await fetch(`/api/auth/logout`, {
         method: 'POST'
       });
       // send user to homepage on logout. (Unprotected page).

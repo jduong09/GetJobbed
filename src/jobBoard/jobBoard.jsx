@@ -8,7 +8,7 @@ export const JobBoard = () => {
   useEffect(() => {
     const getJobs = async () => {
       try {
-        const response = await fetch('/jobboard', {
+        const response = await fetch('/api/jobboard', {
           method: 'GET',
           headers: {
             'Access-Control-Allow-Origin': '*'

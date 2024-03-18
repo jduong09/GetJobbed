@@ -7,14 +7,6 @@ import { createToken, getTokenByUserId } from '../server/actions/tokens.js';
 dotenv.config();
 const app = express.Router();
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173', 'http://localhost:5000');
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
-
 const { gmail_client_id, gmail_client_secret, gmail_redirect_url } = process.env;
 
 const oAuth2Client = new OAuth2Client(
@@ -94,8 +86,6 @@ app.post('/login', async (req, res, next) => {
       await req.session.save((err) => {
         if (err) return next(err);
       });
-      console.log('Req Session in /login: ', req.session);
-      console.log(req.session.id);
       res.redirect(`http://localhost:5173/users/${user.user_uuid}`);
       // Add Token to Cookie.
     } else {

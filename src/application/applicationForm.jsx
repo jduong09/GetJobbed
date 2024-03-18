@@ -38,8 +38,15 @@ export const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
           },
           body: JSON.stringify(bodyData)
         });
-        const data = response.json();
-        console.log(data);
+        const { requestStatus } = await response.json();
+        console.log(requestStatus);
+        if (requestStatus === 200) {
+          console.log('yay');
+        } else if (requestStatus === 400) {
+          console.log('no yay');
+        }
+        handleCloseClick(e);
+        return;
       } catch(err) {
         console.log(err);
       }

@@ -22,8 +22,6 @@ app.listen(port, () => {
 
 const pgSession = ConnectPg(expressSession);
 
-
-
 const session = {
   store: new pgSession({
   pool: pgPool,
@@ -33,7 +31,7 @@ const session = {
   cookie: {
     sameSite: 'lax',
     httpOnly: false,
-    maxAge: 60000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
     secure: false
   },
   resave: false,
@@ -46,5 +44,4 @@ if (node_env === 'production') {
 }
 
 app.use(expressSession(session));
-
 app.use('/api', apiRouter);

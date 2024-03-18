@@ -14,8 +14,11 @@ app.post('/new', async (req, res) => {
   const { user_id } = req.session.userInfo;
   try {
     const response = await createJob({ name, position, status, user_id, email });
-    const data = response.json();
-    console.log(data);
+    if (response.id) {
+      res.json({ requestStatus: 200 });
+    } else {
+      res.json({ requestStatus: 400 });
+    }
   } catch (err) {
     console.log(err);
   }

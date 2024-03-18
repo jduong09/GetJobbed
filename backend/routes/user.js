@@ -6,8 +6,6 @@ dotenv.config();
 const app = express.Router();
 
 app.get('/:user_uuid/messages', async (req, res) => {
-  console.log('hit route');
-  console.log('Req Session in /:user_uuid/messages : ', req.session);
   res.end();
   /*
   const accessToken = await authClient.credentials.access_token;
