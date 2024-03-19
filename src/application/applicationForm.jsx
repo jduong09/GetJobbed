@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
@@ -6,6 +6,10 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
   const [position, setPosition] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState(0);
+  const [errorMessageName, setErrorMessageName] = useState("Company name is required");
+  const [errorMessagePosition, setErrorMessagePosition] = useState("Company position is required");
+  const errorNameRef = useRef(null);
+  const errorPositionRef = useRef(null);
 
   const handleChange = (formInput, e) => {
     if (formInput === 'name') {
@@ -15,12 +19,36 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
     } else if (formInput === 'email') {
       setEmail(e.target.value);
     } else if (formInput === 'status') {
-      setStatus(e.target.value);
+      console.log('Setting Select Status');
+      console.log(parseInt(e.target.value));
+      setStatus(parseInt(e.target.value));
     }
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    /* Client-side Form Validation on input:companyname input:position */
+    if (!companyName.length && !position.length) {
+      setErrorMessageName("Company Name is required");
+      setErrorMessagePosition("Company position is required");
+      errorNameRef.current.classList.remove('hide');
+      errorPositionRef.current.classList.remove('hide');
+      return;
+    } else if (!companyName.length) {
+      setErrorMessageName("Company Name is required");
+      errorNameRef.current.classList.remove('hide');
+      errorPositionRef.current.classList.add('hide');
+      return;
+    } else if (!position.length) {
+      // insert error handling.
+      setErrorMessagePosition("Company position is required");
+      errorNameRef.current.classList.add('hide');
+      errorPositionRef.current.classList.remove('hide');
+      return;
+    } else {
+      errorNameRef.current.classList.add('hide');
+      errorPositionRef.current.classList.add('hide');
+    }
     
     const fetchJob = async () => {
       const bodyData = {
@@ -41,9 +69,13 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
         const { requestStatus } = await response.json();
         console.log(requestStatus);
         if (requestStatus === 200) {
-          console.log('yay');
+          setCompanyName("");
+          setPosition("");
+          setEmail("");
+          setStatus(0);
         } else if (requestStatus === 400) {
           console.log('no yay');
+          /* Need to handle server-side error. */
         }
         handleCloseClick(e);
         return;
@@ -65,25 +97,27 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
       <form id="form-application-create">
         <label htmlFor='input-company-name'>
           Company Name
-          <input type='text' id='input-company-name' name='company-name' onChange={(e) => handleChange('name', e)} value={companyName} />
+          <input type='text' id='input-company-name' name='company-name' onChange={(e) => handleChange('name', e)} value={companyName} required/>
         </label>
+        <span ref={errorNameRef} className={`span-error-message hide`}>{errorMessageName}</span>
         <label htmlFor='input-job-position'>
           Job Title
-          <input type='text' id='input-job-position' name='job-position' onChange={(e) => handleChange('position', e)} value={position} />
+          <input type='text' id='input-job-position' name='job-position' onChange={(e) => handleChange('position', e)} value={position} required/>
         </label>
+        <span ref={errorPositionRef} className='span-error-message hide'>{errorMessagePosition}</span>
         <label htmlFor='input-email'>
           Email
           <input type='email' id='input-email' name='email' onChange={(e) => handleChange('email', e)} value={email} />
         </label>
         <label htmlFor='status-select'>
           Application Status:
-          <select value={status} id="status-select" name='status-select' onChange={(e) => handleChange('status', e)}>
-            <option value={0}>Applied</option>
-            <option value={1}>Received Offer</option>
-            <option value={2}>Rejected</option>
+          <select value={status} id="status-select" name='status-select' onChange={(e) => handleChange('status', e)} required>
+            <option value="0">Applied</option>
+            <option value="1">Received Offer</option>
+            <option value="2">Rejected</option>
           </select>
         </label>
-        <button onClick={handleSubmit} id="btn-submit">Add Job</button>
+        <button type="button" onClick={handleSubmit} id="btn-submit">Add Job</button>
       </form>
     </div>
   )

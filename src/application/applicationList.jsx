@@ -16,9 +16,9 @@ const ApplicationList = ({ user_uuid }) => {
       }
     }
     fetchAllApplications();
-  }, []);
+  });
 
-  const listApplications = applications.map((application, idx) => {
+  const rowsBodyTable = applications.map((application, idx) => {
     let statusText;
     if (application.application_status === 0) {
       statusText = 'Applied';
@@ -29,17 +29,26 @@ const ApplicationList = ({ user_uuid }) => {
     }
 
     return (
-      <li key={idx} className='list-item-application'>
-        <h3>{application.name}</h3>
-        <div>{application.position}</div>
-        <div>{statusText}</div>
-      </li>
+      <tr key={idx}>
+        <th scope="row">{application.name}</th>
+        <td>{application.position}</td>
+        <td>{statusText}</td>
+      </tr>
     );
   });
   
   return (
     <div id="div-applications">
-      <ul id="list-applications">{applications.length && listApplications}</ul>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Company Name</th>
+            <th scope="col">Position</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>{rowsBodyTable}</tbody>
+      </table>
     </div>
   );
 };

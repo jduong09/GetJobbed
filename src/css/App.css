@@ -113,6 +113,21 @@ body {
   color: #ffffff;
 }
 
+/* Application List Table */
+table {
+  border-collapse: collapse;
+  font-size: 1rem;
+  background-color: rgb(237, 238, 242);
+}
+
+thead th {
+  font-weight: 700;
+}
+
+th, td {
+  border: 1px solid rgb(160, 160, 160);
+  padding: .5rem;
+}
 /* Application Create Modal */
 #div-application-form {
   padding: 1rem;
@@ -157,6 +172,13 @@ body {
   padding: .5rem 1rem;
   margin-left: 1rem;
   background-color: #f9f9f9;
+}
+
+.span-error-message {
+  display: block;
+  margin: -.5rem 0 1rem 0;
+  font-weight: 500;
+  color: red;
 }
 
 .hide {

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+/* add useEffect to react import when using it again */
+import { useState } from 'react';
 import { JobBoard } from '../jobBoard/jobBoard';
 import ApplicationForm from '../application/applicationForm';
 import ApplicationList from '../application/applicationList';
