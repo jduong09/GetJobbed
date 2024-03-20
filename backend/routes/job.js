@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { createJob } from '../server/actions/jobs.js';
+import { createJob, getJobByUuid } from '../server/actions/jobs.js';
 
 dotenv.config();
 const app = express.Router();
@@ -19,6 +19,16 @@ app.post('/new', async (req, res) => {
     console.log(err);
   }
   res.end();
+});
+
+app.get('/:job_uuid', async (req, res) => {
+  const { job_uuid } = req.params;
+  try {
+    const response = await getJobByUuid(job_uuid);
+    res.json({ data: response });
+  } catch(err) {
+    console.log(err);
+  }
 });
 
 export {

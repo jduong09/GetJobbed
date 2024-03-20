@@ -5,11 +5,11 @@ import ApplicationForm from '../application/applicationForm';
 import ApplicationList from '../application/applicationList';
 import { useParams } from 'react-router-dom';
 
-
 const Dashboard = () => {
   const { user_uuid } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
+  const [applicationFormData, setApplicationFormData] = useState({});
   /*
   useEffect(() => {
 
@@ -45,6 +45,7 @@ const Dashboard = () => {
     e.preventDefault();
     setIsOpen(false);
   }
+  console.log('Application Form Data: ', applicationFormData);
 
   return (
     <div>
@@ -62,9 +63,9 @@ const Dashboard = () => {
             <button type="button" onClick={() => setShowApplications(false)}>Jobs</button>
             <button type="button" onClick={() => setShowApplications(true)}>Applications</button>
           </div>
-          {!showApplications ? <JobBoard /> : <ApplicationList user_uuid={user_uuid} />}
+          {!showApplications ? <JobBoard /> : <ApplicationList user_uuid={user_uuid} setApplicationFormData={setApplicationFormData} handleOpenModal={handleOpenModal} />}
         </div>
-        <ApplicationForm isOpen={isOpen} handleCloseClick={handleCloseClick} user_uuid={user_uuid} />
+        <ApplicationForm isOpen={isOpen} handleCloseClick={handleCloseClick} user_uuid={user_uuid} applicationFormData={applicationFormData} />
       </main>
     </div>
   );

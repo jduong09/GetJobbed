@@ -7,7 +7,7 @@ const createJob = async ({ name, position, status, user_id, email }) => {
       position,
       application_status: status === 0 || status === 1 || status === 2 ? status : null,
       user_id,
-      email: email || null,
+      email: email ? [email] : [],
     });
     return data;
   } catch (err) {
@@ -26,7 +26,19 @@ const getAllJobsByUserId = async({ user_id }) => {
   }
 };
 
+const getJobByUuid = async (job_uuid) => {
+  try {
+    const { rows: [data] } = await execute('backend/sql/jobs/getJobByUuid.sql', {
+      job_uuid
+    });
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export {
   createJob,
-  getAllJobsByUserId
+  getAllJobsByUserId,
+  getJobByUuid
 }
