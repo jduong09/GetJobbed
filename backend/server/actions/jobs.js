@@ -51,9 +51,21 @@ const editJob = async ({ name, position, status, job_uuid }) => {
   }
 }
 
+const deleteJobByUuid = async (job_uuid) => {
+  try {
+    const { rows: [data] } = await execute('backend/sql/jobs/deleteJobByUuid.sql', {
+      job_uuid
+    });
+    return data;
+  } catch(err) {
+    console.log(err);
+  }
+}
+
 export {
   createJob,
   getAllJobsByUserId,
   getJobByUuid,
-  editJob
+  editJob,
+  deleteJobByUuid
 }

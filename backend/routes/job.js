@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { createJob, getJobByUuid, editJob } from '../server/actions/jobs.js';
+import { createJob, getJobByUuid, editJob, deleteJobByUuid } from '../server/actions/jobs.js';
 
 dotenv.config();
 const app = express.Router();
@@ -46,7 +46,18 @@ app.patch('/edit', async (req, res) => {
     console.log(err);
   }
   res.end();
-})
+});
+
+app.delete('/:job_uuid', async (req, res) => {
+  const { job_uuid } = req.params;
+  try {
+    const response = await deleteJobByUuid(job_uuid);
+    res.json({ data: response });
+  } catch(err) {
+    console.log(err);
+    res.end();
+  }
+});
 
 export {
   app as jobRouter

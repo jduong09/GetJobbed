@@ -15,17 +15,6 @@ const Dashboard = () => {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    const fetchAllApplications = async () => {
-      try {
-        const response = await fetch(`/api/users/${user_uuid}/jobs`, {
-          method: 'GET'
-        });
-        const data = await response.json();
-        setApplications(data.jobsArray);
-      } catch(err) {
-        console.log(err);
-      }
-    }
     fetchAllApplications();
     /*
     const fetchFilteredEmails = async () => {
@@ -38,6 +27,18 @@ const Dashboard = () => {
     fetchFilteredEmails();
     */
   }, [editStatus]);
+
+  const fetchAllApplications = async () => {
+    try {
+      const response = await fetch(`/api/users/${user_uuid}/jobs`, {
+        method: 'GET'
+      });
+      const data = await response.json();
+      setApplications(data.jobsArray);
+    } catch(err) {
+      console.log(err);
+    }
+  }
 
   const handleLogOut = async () => {
     try {
@@ -77,9 +78,9 @@ const Dashboard = () => {
             <button type="button" onClick={() => setShowApplications(false)}>Jobs</button>
             <button type="button" onClick={() => setShowApplications(true)}>Applications</button>
           </div>
-          {!showApplications ? <JobBoard /> : <ApplicationList applications={applications} user_uuid={user_uuid} setApplicationFormData={setApplicationFormData} handleOpenModal={handleOpenModal} setEditStatus={setEditStatus} />}
+          {!showApplications ? <JobBoard /> : <ApplicationList fetchAllApplications={fetchAllApplications} applications={applications} user_uuid={user_uuid} setApplicationFormData={setApplicationFormData} handleOpenModal={handleOpenModal} setEditStatus={setEditStatus} />}
         </div>
-        <ApplicationForm editStatus={editStatus} setEditStatus={setEditStatus} isOpen={isOpen} handleCloseClick={handleCloseClick} user_uuid={user_uuid} applicationFormData={applicationFormData} />
+        <ApplicationForm editStatus={editStatus} fetchAllApplications={fetchAllApplications} setEditStatus={setEditStatus} isOpen={isOpen} handleCloseClick={handleCloseClick} user_uuid={user_uuid} applicationFormData={applicationFormData} />
       </main>
     </div>
   );
