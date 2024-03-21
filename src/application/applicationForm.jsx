@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-const ApplicationForm = ({ editStatus, setEditStatus, isOpen, handleCloseClick, user_uuid, applicationFormData }) => {
+const ApplicationForm = ({ fetchAllApplications, editStatus, setEditStatus, isOpen, handleCloseClick, user_uuid, applicationFormData }) => {
   const [companyName, setCompanyName] = useState("");
   const [position, setPosition] = useState("");
   const [email, setEmail] = useState("");
@@ -92,7 +92,8 @@ const ApplicationForm = ({ editStatus, setEditStatus, isOpen, handleCloseClick, 
           console.log('no yay');
           /* Need to handle server-side error. */
         }
-        handleCloseClick(e);
+        await handleCloseClick(e);
+        fetchAllApplications()
         return;
       } catch(err) {
         console.log(err);
@@ -142,6 +143,7 @@ const ApplicationForm = ({ editStatus, setEditStatus, isOpen, handleCloseClick, 
 export default ApplicationForm;
 
 ApplicationForm.propTypes = {
+  fetchAllApplications: PropTypes.func,
   editStatus: PropTypes.bool,
   setEditStatus: PropTypes.func,
   isOpen: PropTypes.bool,
