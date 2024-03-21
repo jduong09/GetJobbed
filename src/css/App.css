@@ -114,19 +114,21 @@ body {
 }
 
 /* Application List Table */
-table {
-  border-collapse: collapse;
-  font-size: 1rem;
-  background-color: rgb(237, 238, 242);
+.list-item-application {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
 }
 
-thead th {
+.list-item-application > div > h3, .list-item-application > div > h4 {
   font-weight: 700;
 }
 
-th, td {
-  border: 1px solid rgb(160, 160, 160);
-  padding: .5rem;
+.list-item-application > div {
+  flex: 2 50%;
 }
 /* Application Create Modal */
 #div-application-form {

@@ -37,8 +37,23 @@ const getJobByUuid = async (job_uuid) => {
   }
 }
 
+const editJob = async ({ name, position, status, job_uuid }) => {
+  try {
+    const { rows: [data] } = await execute('backend/sql/jobs/patchJobByUuid.sql', {
+      name,
+      position,
+      application_status: status,
+      job_uuid
+    });
+    return data;
+  } catch(err) {
+    console.log(err);
+  }
+}
+
 export {
   createJob,
   getAllJobsByUserId,
-  getJobByUuid
+  getJobByUuid,
+  editJob
 }

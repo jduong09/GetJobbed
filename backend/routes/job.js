@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { createJob, getJobByUuid } from '../server/actions/jobs.js';
+import { createJob, getJobByUuid, editJob } from '../server/actions/jobs.js';
 
 dotenv.config();
 const app = express.Router();
@@ -30,6 +30,23 @@ app.get('/:job_uuid', async (req, res) => {
     console.log(err);
   }
 });
+
+app.patch('/edit', async (req, res) => {
+  const { name, position, status, job_uuid } = req.body;
+
+  try {
+    const response = await editJob({ name, position, status, job_uuid });
+    
+    if (response.id) {
+      res.json({ requestStatus: 200 });
+    } else {
+      res.json({ requestStatus: 400 });
+    }
+  } catch(err) {
+    console.log(err);
+  }
+  res.end();
+})
 
 export {
   app as jobRouter

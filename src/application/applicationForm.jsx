@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid, applicationFormData }) => {
+const ApplicationForm = ({ editStatus, setEditStatus, isOpen, handleCloseClick, user_uuid, applicationFormData }) => {
   const [companyName, setCompanyName] = useState("");
   const [position, setPosition] = useState("");
   const [email, setEmail] = useState("");
@@ -64,11 +64,18 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid, applicationFormD
         position,
         email,
         status,
-        user_uuid: user_uuid
+        user_uuid: user_uuid,
       };
+
+      if (editStatus) {
+        bodyData['job_uuid'] = applicationFormData.job_uuid;
+      }
+      const method = editStatus ? 'PATCH' : 'POST';
+      const url = editStatus ? '/api/jobs/edit' : '/api/jobs/new';
+
       try {
-        const response = await fetch(`/api/jobs/new`, {
-          method: 'POST',
+        const response = await fetch(url, {
+          method,
           headers: {
             'Content-Type': 'application/json',
           },
@@ -92,6 +99,7 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid, applicationFormD
       }
     }
     fetchJob();
+    setEditStatus(false);
   }
 
   return (
@@ -134,6 +142,8 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid, applicationFormD
 export default ApplicationForm;
 
 ApplicationForm.propTypes = {
+  editStatus: PropTypes.bool,
+  setEditStatus: PropTypes.func,
   isOpen: PropTypes.bool,
   handleCloseClick: PropTypes.func,
   user_uuid: PropTypes.string,

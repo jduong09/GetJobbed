@@ -1,5 +1,5 @@
 /* add useEffect to react import when using it again */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { JobBoard } from '../jobBoard/jobBoard';
 import ApplicationForm from '../application/applicationForm';
 import ApplicationList from '../application/applicationList';
@@ -10,9 +10,24 @@ const Dashboard = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
   const [applicationFormData, setApplicationFormData] = useState({});
-  /*
-  useEffect(() => {
+  const [editStatus, setEditStatus] = useState(false);
 
+  const [applications, setApplications] = useState([]);
+
+  useEffect(() => {
+    const fetchAllApplications = async () => {
+      try {
+        const response = await fetch(`/api/users/${user_uuid}/jobs`, {
+          method: 'GET'
+        });
+        const data = await response.json();
+        setApplications(data.jobsArray);
+      } catch(err) {
+        console.log(err);
+      }
+    }
+    fetchAllApplications();
+    /*
     const fetchFilteredEmails = async () => {
       const response = await fetch(`/api/users/${user_uuid}/messages`, {
         method: 'GET'
@@ -20,9 +35,9 @@ const Dashboard = () => {
       const data = response.json();
       console.log(data);
     }
-    // fetchFilteredEmails();
-  }, []);
-  */
+    fetchFilteredEmails();
+    */
+  }, [editStatus]);
 
   const handleLogOut = async () => {
     try {
@@ -45,7 +60,6 @@ const Dashboard = () => {
     e.preventDefault();
     setIsOpen(false);
   }
-  console.log('Application Form Data: ', applicationFormData);
 
   return (
     <div>
@@ -63,9 +77,9 @@ const Dashboard = () => {
             <button type="button" onClick={() => setShowApplications(false)}>Jobs</button>
             <button type="button" onClick={() => setShowApplications(true)}>Applications</button>
           </div>
-          {!showApplications ? <JobBoard /> : <ApplicationList user_uuid={user_uuid} setApplicationFormData={setApplicationFormData} handleOpenModal={handleOpenModal} />}
+          {!showApplications ? <JobBoard /> : <ApplicationList applications={applications} user_uuid={user_uuid} setApplicationFormData={setApplicationFormData} handleOpenModal={handleOpenModal} setEditStatus={setEditStatus} />}
         </div>
-        <ApplicationForm isOpen={isOpen} handleCloseClick={handleCloseClick} user_uuid={user_uuid} applicationFormData={applicationFormData} />
+        <ApplicationForm editStatus={editStatus} setEditStatus={setEditStatus} isOpen={isOpen} handleCloseClick={handleCloseClick} user_uuid={user_uuid} applicationFormData={applicationFormData} />
       </main>
     </div>
   );
