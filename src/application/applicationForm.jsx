@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
+const ApplicationForm = ({ editStatus, setEditStatus, isOpen, handleCloseClick, user_uuid, applicationFormData }) => {
   const [companyName, setCompanyName] = useState("");
   const [position, setPosition] = useState("");
   const [email, setEmail] = useState("");
@@ -10,6 +10,14 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
   const [errorMessagePosition, setErrorMessagePosition] = useState("Company position is required");
   const errorNameRef = useRef(null);
   const errorPositionRef = useRef(null);
+
+  useEffect(() => {
+    if (Object.keys(applicationFormData).length) {
+      setCompanyName(applicationFormData.name);
+      setPosition(applicationFormData.position);
+      setStatus(applicationFormData.application_status);
+    }
+  }, [applicationFormData]);
 
   const handleChange = (formInput, e) => {
     if (formInput === 'name') {
@@ -56,11 +64,18 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
         position,
         email,
         status,
-        user_uuid: user_uuid
+        user_uuid: user_uuid,
       };
+
+      if (editStatus) {
+        bodyData['job_uuid'] = applicationFormData.job_uuid;
+      }
+      const method = editStatus ? 'PATCH' : 'POST';
+      const url = editStatus ? '/api/jobs/edit' : '/api/jobs/new';
+
       try {
-        const response = await fetch(`/api/jobs/new`, {
-          method: 'POST',
+        const response = await fetch(url, {
+          method,
           headers: {
             'Content-Type': 'application/json',
           },
@@ -84,12 +99,13 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
       }
     }
     fetchJob();
+    setEditStatus(false);
   }
 
   return (
     <div className={isOpen === true ? '' : 'hide'} id="div-application-form">
       <div id="form-header">
-        <h2>Add Application</h2>
+        <h2>{Object.keys(applicationFormData).length ? 'Edit Application' : 'Add Application'}</h2>
         <button type="button" id="btn-modal-close" onClick={handleCloseClick}>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 384 512"><path d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z"/></svg>
         </button>
@@ -126,7 +142,10 @@ const ApplicationForm = ({ isOpen, handleCloseClick, user_uuid }) => {
 export default ApplicationForm;
 
 ApplicationForm.propTypes = {
+  editStatus: PropTypes.bool,
+  setEditStatus: PropTypes.func,
   isOpen: PropTypes.bool,
   handleCloseClick: PropTypes.func,
   user_uuid: PropTypes.string,
+  applicationFormData: PropTypes.object
 }
