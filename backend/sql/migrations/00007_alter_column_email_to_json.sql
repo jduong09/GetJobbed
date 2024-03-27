@@ -1,0 +1,1 @@
+ALTER TABLE jobs ALTER email TYPE JSON USING to_json(email);

@@ -15,8 +15,6 @@ const Dashboard = () => {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    fetchAllApplications();
-    /*
     const fetchFilteredEmails = async () => {
       const response = await fetch(`/api/users/${user_uuid}/messages`, {
         method: 'GET'
@@ -25,7 +23,7 @@ const Dashboard = () => {
       console.log(data);
     }
     fetchFilteredEmails();
-    */
+    fetchAllApplications();
   }, [editStatus]);
 
   const fetchAllApplications = async () => {
