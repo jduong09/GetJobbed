@@ -7,7 +7,7 @@ const LandingPage = () => {
 
     const authorizeUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/authorize');
+        const response = await fetch('/api/auth/authorize');
         const { signedIn, oauthUrl } = await response.json();
         if (!signedIn) {
           window.location = oauthUrl;
