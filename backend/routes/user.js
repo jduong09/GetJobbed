@@ -9,7 +9,6 @@ dotenv.config();
 const app = express.Router();
 
 app.post('/:user_uuid/messages', async (req, res) => {
-  console.log('Hit /:user_uuid/messages route');
   const { emails } = await req.body;
   let regex = emails.reduce((accumulator, currentValue) => {
     return accumulator += `|${currentValue}`;
@@ -33,8 +32,14 @@ app.post('/:user_uuid/messages', async (req, res) => {
         return email !== undefined;
       });
     });
-    console.log(arrMessageFromObjs);
-    res.json({ data: 'nice' });
+    // { ...resultObj, messageId, bodyMessage };
+    /*
+     name: 'From',
+[0]  value: '"Nicolò Bardi - Joinrs" <workwithus@joinrs.com>',
+[0]  messageId: '18dd3e868988a741',
+[0]  bodyMessage: '\r\n' +
+    */
+    res.json({ data: arrMessageFromObjs });
   } catch(err) {
     console.log(err);
     res.json({ data: 'No' });
@@ -42,10 +47,11 @@ app.post('/:user_uuid/messages', async (req, res) => {
 });
 
 app.get('/:user_uuid/jobs', async (req, res) => {
-  const { user_id }  = req.session.userInfo;
+  const { user_id }  = await req.session.userInfo;
   const arrayEmails = [];
   try {
     const response = await getAllJobsByUserId({ user_id });
+    console.log('Response: ', response);
     response.forEach((application) => {
       if (application.email) {
         application.email.forEach(email => {
@@ -54,7 +60,7 @@ app.get('/:user_uuid/jobs', async (req, res) => {
       }
     });
 
-    await fetch(`http://localhost:5000/api/users/${req.params.user_uuid}/messages`, {
+    const messageResponse = await fetch(`http://localhost:5000/api/users/${req.params.user_uuid}/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -64,8 +70,10 @@ app.get('/:user_uuid/jobs', async (req, res) => {
       })
     });
 
+    const array = await messageResponse.json();
+
     // console.log(arrayEmails);
-    res.json({ jobsArray: response });
+    res.json({ jobsArray: response, emailsArray: array.data });
   } catch(err) {
     console.log(err);
   }

@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [showApplications, setShowApplications] = useState(false);
   const [applicationFormData, setApplicationFormData] = useState({});
   const [editStatus, setEditStatus] = useState(false);
+  const [emailData, setEmailData] = useState([]);
 
   const [applications, setApplications] = useState([]);
 
@@ -19,10 +20,11 @@ const Dashboard = () => {
       const response = await fetch(`/api/users/${user_uuid}/messages`, {
         method: 'GET'
       });
-      const data = response.json();
-      console.log(data);
+      const data = await response.json();
+      console.log('Fetch Filtered Emails Data: ', data);
+      setEmailData(data.data);
     }
-    fetchFilteredEmails();
+    // fetchFilteredEmails();
     fetchAllApplications();
   }, [editStatus]);
 
@@ -35,7 +37,9 @@ const Dashboard = () => {
       if (data.status === 404) {
         throw new Error('Authentication failed');
       } 
+      console.log('Emails Array: ', data.emailsArray);
       setApplications(data.jobsArray);
+      setEmailData(data.emailsArray);
     } catch(err) {
       console.log(err);
     }
@@ -79,7 +83,7 @@ const Dashboard = () => {
             <button type="button" onClick={() => setShowApplications(false)}>Jobs</button>
             <button type="button" onClick={() => setShowApplications(true)}>Applications</button>
           </div>
-          {!showApplications ? <JobBoard /> : <ApplicationList fetchAllApplications={fetchAllApplications} applications={applications} user_uuid={user_uuid} setApplicationFormData={setApplicationFormData} handleOpenModal={handleOpenModal} setEditStatus={setEditStatus} />}
+          {!showApplications ? <JobBoard /> : <ApplicationList fetchAllApplications={fetchAllApplications} applications={applications} user_uuid={user_uuid} setApplicationFormData={setApplicationFormData} handleOpenModal={handleOpenModal} setEditStatus={setEditStatus} emailData={emailData} />}
         </div>
         <ApplicationForm editStatus={editStatus} fetchAllApplications={fetchAllApplications} setEditStatus={setEditStatus} isOpen={isOpen} handleCloseClick={handleCloseClick} user_uuid={user_uuid} applicationFormData={applicationFormData} />
       </main>
