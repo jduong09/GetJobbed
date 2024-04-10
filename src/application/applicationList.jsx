@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-const ApplicationList = ({ fetchAllApplications, applications, setApplicationFormData, handleOpenModal, setEditStatus }) => {
+const ApplicationList = ({ fetchAllApplications, applications, setApplicationFormData, handleOpenModal, setEditStatus, emailData }) => {
   const handleEdit = (e) => {
     e.preventDefault();
     const job_uuid = e.currentTarget.parentElement.parentElement.parentElement.getAttribute('data-uuid');
@@ -10,7 +10,6 @@ const ApplicationList = ({ fetchAllApplications, applications, setApplicationFor
         method: 'GET'
       });
       const { data } = await response.json();
-      /* { name, position, application_status } */
       await setApplicationFormData(data);
       await setEditStatus(true);
       handleOpenModal(e);
@@ -67,10 +66,20 @@ const ApplicationList = ({ fetchAllApplications, applications, setApplicationFor
       </li>
     );
   });
+
+  const itemsEmailData = emailData.map((email, idx) => {
+    return (
+      <li key={idx}>
+        <h2>Sender: {email.value}</h2>
+        <div>{email.bodyMessage}</div>
+      </li>
+    )
+  })
   
   return (
     <div id="div-applications">
       <ul>{rowsBodyTable}</ul>
+      <ul>{itemsEmailData}</ul>
     </div>
   );
 };
@@ -83,5 +92,6 @@ ApplicationList.propTypes = {
   user_uuid: PropTypes.string,
   setApplicationFormData: PropTypes.func,
   handleOpenModal: PropTypes.func,
-  setEditStatus: PropTypes.func
+  setEditStatus: PropTypes.func,
+  emailData: PropTypes.array
 }
