@@ -37,7 +37,6 @@ const Dashboard = () => {
       if (data.status === 404) {
         throw new Error('Authentication failed');
       } 
-      console.log('Emails Array: ', data.emailsArray);
       setApplications(data.jobsArray);
       setEmailData(data.emailsArray);
     } catch(err) {

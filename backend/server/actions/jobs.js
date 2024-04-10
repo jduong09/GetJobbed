@@ -7,7 +7,7 @@ const createJob = async ({ name, position, status, user_id, email }) => {
       position,
       application_status: status === 0 || status === 1 || status === 2 ? status : null,
       user_id,
-      email: email ? [email] : [],
+      email: email.length ? [email] : [],
     });
     return data;
   } catch (err) {

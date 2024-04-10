@@ -48,6 +48,7 @@ app.post('/:user_uuid/messages', async (req, res) => {
 
 app.get('/:user_uuid/jobs', async (req, res) => {
   const { user_id }  = await req.session.userInfo;
+  console.log('Session User_ud: ', user_id);
   const arrayEmails = [];
   try {
     const response = await getAllJobsByUserId({ user_id });
@@ -60,6 +61,7 @@ app.get('/:user_uuid/jobs', async (req, res) => {
       }
     });
 
+    /*
     const messageResponse = await fetch(`http://localhost:5000/api/users/${req.params.user_uuid}/messages`, {
       method: 'POST',
       headers: {
@@ -73,7 +75,8 @@ app.get('/:user_uuid/jobs', async (req, res) => {
     const array = await messageResponse.json();
 
     // console.log(arrayEmails);
-    res.json({ jobsArray: response, emailsArray: array.data });
+    */
+    res.json({ jobsArray: response, emailsArray: [] });
   } catch(err) {
     console.log(err);
   }
