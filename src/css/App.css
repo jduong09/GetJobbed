@@ -134,7 +134,7 @@ body {
 #div-application-form {
   padding: 1rem;
   position: absolute;
-  top: 25%;
+  top: 1%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
